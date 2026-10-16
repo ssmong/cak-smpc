@@ -1,0 +1,57 @@
+wandb:
+  project: "2026-AST-PARTY"
+  entity: null
+  group: "ramp"
+  mode: "online"
+
+hydra:
+  run:
+    dir: "outputs/learning_ramp/${now:%Y-%m-%d}/${now:%H-%M-%S}"
+
+# --- Data (shared HDF5 + collocation points) ---
+data:
+  name: "clean"
+  data_root: "data/raw"
+  state_key: "state"
+  control_key: "control"
+  num_seqs: 100000
+  sim_time: 46
+  log_dt: 0.1
+  mpc_dt: 0.5                      # prediction horizon interval [s]
+  num_data_points: 2500             # |D| (from HDF5 simulation data)
+  num_physics_points: 2500          # |P| (randomly generated collocation points)
+  omega_max: 0.2                    # [rad/s] for collocation point generation
+  u_min: -0.5                       # [Nm]
+  u_max: 0.5                        # [Nm]
+  val_ratio: 0.1
+  test_ratio: 0.1                   # test split (matching Party's train/val/test pattern)
+  seed: 42
+
+# --- PINN Model (Section V-A) ---
+model:
+  _target_: src.model.ramp_net.RampNet
+  state_dim: 7
+  control_dim: 3
+  hidden_dim: 128                   # 128 neurons per layer
+  num_layers: 4                     # 4-layer MLP
+  activation: "tanh"
+
+# --- Training (Section V-A) ---
+train:
+  epochs: 2000
+  lr: 1.0                           # L-BFGS default
+  early_stopping_patience: 500
+  max_lbfgs_iter: 20                # L-BFGS inner iterations per step
+  history_size: 50                  # L-BFGS history size
+
+# --- Physics Loss (Section IV-B, Eq. 9-10) ---
+# Parametric uncertainty: f(x,u) = f_bar(x,u) + f_hat, f_hat ~ N(0, σ²I)
+# Paper (Section V-A): "unit standard deviation, Σ = constant unit diagonal covariance matrix"
+# σ=1.0 was calibrated for quadrotor dynamics where |ẋ| ~ O(10) (gravity term),
+# giving σ/|ẋ| ~ 0.1. For satellite attitude dynamics |ẋ| ~ O(0.01-0.05),
+# we scale σ to maintain a similar ratio: σ = 0.005 → σ/|ẋ| ~ 0.1-0.5.
+physics:
+  nominal_inertia: [34.168, 43.068, 34.908]  # [kg·m²] from sc_default.yaml
+  parametric_noise_std: 0.005                  # σ scaled for satellite dynamics (see comment above)
+
+device: "cuda"

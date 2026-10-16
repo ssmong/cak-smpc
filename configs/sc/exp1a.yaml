@@ -1,0 +1,15 @@
+defaults:
+  - sc_default
+  - _self_
+
+# Experiment 1a: Constant Moment of Inertia — In-Distribution (Diagonal)
+attitude:
+  quat_init: [1.0, 0.0, 0.0, 0.0]
+  quat_goal: [-0.4949, 0.2442, 0.4695, -0.6892]
+
+# Ixx=31, Iyy=33, Izz=28
+inertia: [31.0, 0.0, 0.0, 0.0, 33.0, 0.0, 0.0, 0.0, 28.0]
+post_inertia: [31.0, 0.0, 0.0, 0.0, 33.0, 0.0, 0.0, 0.0, 28.0]
+inertia_change:
+  enabled: false
+  time_sec: 0.0

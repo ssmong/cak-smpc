@@ -1,0 +1,22 @@
+u_min: -0.5   # [Nm]
+u_max: 0.5    # [Nm]
+
+boresight_list:
+  - name: "Startracker"
+    vec: [0, 1, 0]
+  - name: "Camera"
+    vec: [0, 0, 1]
+
+koz_list:
+  - name: "Sun"
+    direction: [0.6, 0.5291, 0.6]
+    angle_deg: 20.0
+  - name: "Earth"
+    direction: [-0.7553, 0.4498, 0.3560]
+    angle_deg: 20.0
+  - name: "Moon"
+    direction: [0.4036, 0.8707, -0.2010]
+    angle_deg: 20.0
+  - name: "Jupiter"
+    direction: [-0.5343, 0.5958, -0.3796]
+    angle_deg: 20.0

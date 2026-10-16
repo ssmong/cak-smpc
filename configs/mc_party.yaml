@@ -1,0 +1,59 @@
+defaults:
+  - sc: sc_default
+  - controller: party_smpc
+  - constraint: default
+  - _self_
+
+sim:
+  sim_time: 50.0
+  sim_dt: 0.01
+  ctrl_dt: 0.1
+  log_dt: 0.01
+
+env:
+  gravity_order: 4
+  enable_drag: true
+  enable_srp: true
+  enable_gg: true
+
+mc:
+  num_episodes: 500               # MC runs per (experiment, alpha, margin) combination
+  num_workers: 20                 # parallel workers (1 = sequential; >1 skips MPC timing)
+  omega_max: 0.0                  # [rad/s] per-axis uniform range for initial angular velocity
+  perturb_q_init_deg: 10.0        # [deg] max random rotation applied to base q_init per episode
+  viol_margin_deg: 1.0e-2         # [deg] margin subtracted from KOZ half-angle for violation check (filters numerical noise)
+
+# Experiment matrix
+# Each experiment specifies its own constraint config for KOZ geometry.
+# Exp2a: continuous drift via robot arm; Exp2b: abrupt step change.
+experiments:
+  # - sc: exp1a
+  #   constraint: exp1a
+  #   desc: "Constant MOI (In-Distribution)"
+  # - sc: exp1b
+  #   constraint: exp1b
+  #   desc: "Constant MOI (Non-Diagonal)"
+  - sc: exp2a
+    constraint: exp2a
+    desc: "Continuous MOI Drift"
+  # - sc: exp2b
+  #   constraint: exp2b
+  #   desc: "Abrupt MOI Change"
+  # - sc: exp3
+  #   constraint: exp1b
+  #   desc: "Constant MOI (OOD)"
+
+# Chance-constraint sweep (only used when controller has cc config, e.g. party_smpc, asgp_smpc)
+alpha_list: [0.95]
+
+# Linearization margin comparison (only used when controller has lin_margin_file, e.g. party_smpc)
+# null = no margin baseline; path = margin YAML saved by 90_calibrate_party
+margin_files:
+#  - null
+  - "outputs/learning_party/${controller.model_dir}/linearization_margin.yaml"
+
+seed: 42
+
+hydra:
+  run:
+    dir: outputs/mc_party/${now:%Y-%m-%d}/${now:%H-%M-%S}

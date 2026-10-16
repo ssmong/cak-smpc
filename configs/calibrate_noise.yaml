@@ -1,0 +1,32 @@
+defaults:
+  - sc: sc_default
+  - _self_
+
+sc:
+  inertia_change:
+    enabled: false
+
+data:
+  data_root: "data/raw/"
+  name: "calib_exp1a"
+  state_key: "state"
+  control_key: "control"
+  num_seqs: 1000
+  sim_time: 50
+  log_dt: 0.1
+  pred_dt: 0.5
+
+integrator_steps: 5                                    # RK4 sub-steps of UKF-SMPC
+seed: 42
+
+output_dir: configs/noise
+exp_name: exp1a
+
+hydra:
+  run:
+    dir: outputs/calibrate_noise/${now:%Y-%m-%d}/${now:%H-%M-%S}
+
+
+
+
+

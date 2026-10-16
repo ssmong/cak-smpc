@@ -1,0 +1,30 @@
+defaults:
+  - constraint: default
+  - _self_
+
+seed: 42
+
+# q_init / q_goal 각각의 KOZ safety margin (deg)
+safety_margin_deg_init: 15.0
+safety_margin_deg_goal: 15.0
+margin_cap_deg: 45.0
+min_angle_deg: 100.0
+max_angle_deg: 180.0
+max_attempts: 10000
+
+# KOZ 근접 제약 (deg): 최소 하나의 boresight-KOZ gap이 이 값 이하여야 함
+# safety_margin보다 커야 유효 (safety_margin < gap <= koz_proximity)
+# 비활성화하려면 180.0 등 큰 값으로 설정
+koz_proximity_deg_init: 25.0
+koz_proximity_deg_goal: 25.0
+
+# SLERP 경로의 KOZ 최소 gap 제약 (deg)
+# slerp_min_gap_deg <= min_gap(SLERP path) <= slerp_max_gap_deg
+# 음수면 KOZ 침범 허용, 양수면 KOZ와 간격 유지
+slerp_min_gap_deg: -5.0
+slerp_max_gap_deg: 3.0
+slerp_n_samples: 50
+
+hydra:
+  run:
+    dir: outputs/quat_pair/${now:%Y-%m-%d}/${now:%H-%M-%S}

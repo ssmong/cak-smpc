@@ -1,0 +1,40 @@
+defaults:
+  - sc: sc_default
+  - _self_
+
+# --- Simulation parameters (inline, no dependency on sim.yaml) ---
+sim:
+  sim_time: 50      # [s] total simulation time per run
+  sim_dt: 0.01      # [s] dynamics integration step
+  ctrl_dt: 0.5      # [s] controller update rate (random torque hold period)
+  log_dt: 0.1       # [s] message logging rate
+
+# --- Environment ---
+env:
+  gravity_order: 4
+  enable_drag: true
+  enable_srp: true
+  enable_gg: true
+
+# --- Monte Carlo data generation ---
+data_gen:
+  name: "noisy"
+  state_key: "state"
+  control_key: "control"
+  num_seqs: 10000                   # number of MC runs (matches PartyDataset.num_seqs)
+  omega_max: 0.2                    # [rad/s] max abs angular velocity per axis
+  torque_max: 0.5                   # [Nm] max abs random control torque per axis
+  inertia_mode: "random"            # "fixed" | "random" | "perturb"
+  fixed_inertia: [34.168, 0.0, 0.0, 0.0, 43.068, 0.0, 0.0, 0.0, 34.908]  # (fixed mode) 3x3 row-major
+  inertia_range: [25.0, 45.0]       # (random mode) [kg·m²] uniform range for principal moments
+  inertia_max_angle_deg: 20.0       # (random mode) [deg] max rotation of principal axes
+  perturb_pct: 10.0                 # (perturb mode) ±% on diagonal elements
+  off_diag_pct: 5.0                  # (perturb mode) ±% on off-diagonal (geometric mean basis); null → same as perturb_pct
+  data_root: "data/raw"             # output directory (PartyDataset.data_root)
+  num_threads: 16                   # MC Controller worker count (Ubuntu fork-safe)
+
+seed: 42
+
+hydra:
+  run:
+    dir: outputs/data_gen/${now:%Y-%m-%d}/${now:%H-%M-%S}

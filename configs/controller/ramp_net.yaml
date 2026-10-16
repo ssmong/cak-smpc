@@ -1,0 +1,15 @@
+_target_: sim.controller.ramp_net.RampNet
+
+model_dir: ""                       # Path to trained RAMP-Net model directory (relative to outputs/learning_ramp/)
+mpc_dt: ${sim.ctrl_dt}
+horizon: 20
+inertia: ${sc.inertia}
+
+# Cost matrices (same as NMPC for fair comparison)
+# Error vector: [quat_err(3), omega_err(3)]
+Q_diag: [10.0, 10.0, 10.0, 10.0, 10.0, 10.0]
+R_diag: [1.0, 1.0, 1.0]
+F_diag: [100.0, 100.0, 100.0, 100.0, 100.0, 100.0]
+du_weight: 1.0
+rho: 1e5
+max_iter: 100

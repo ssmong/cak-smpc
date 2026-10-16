@@ -1,0 +1,59 @@
+defaults:
+  - sc: exp1a
+  - _self_
+
+wandb:
+  project: "2026-AST-PARTY"
+  entity: null
+  group: "asgp"
+  mode: "online"
+
+hydra:
+  run:
+    dir: "outputs/learning_asgp"
+
+exp_name: exp1a
+
+data:
+  _target_: src.dataset.PartyDataset
+  name: "calib_${exp_name}"
+  data_root: "data/raw"
+  state_dim: 7
+  control_dim: 3
+  state_key: "state"
+  control_key: "control"
+  quat_indices: [0, 1, 2, 3]
+
+  num_seqs: 100
+  sim_time: 100
+  log_dt: 0.1
+
+  hist_dt: 0.1
+  pred_dt: 0.5
+  hist_len: 50
+  sample_stride: 10
+
+  seed: 42
+
+asgp:
+  # Training
+  num_inducing: 50
+  max_samples: 5000
+  num_steps: 200
+  lr: 0.05
+  fixed_Xu: true
+
+  # Per-sequence exact GP fitting
+  perseq_num_steps: 200       # optimization steps per sequence per output dim
+  perseq_lr: 0.05
+  noise_var: 1.0
+  fixed_noise: false
+  lambda_forget: 0.99
+  jitter: 1e-8
+
+  # Calibration
+  calib_samples: 1024
+
+  # Physics — from sc config
+  inertia: ${sc.inertia}
+  rk4_steps: 10              # RK4 sub-steps for residual computation (pred_dt / rk4_steps per sub-step)

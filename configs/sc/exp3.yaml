@@ -1,0 +1,15 @@
+defaults:
+  - sc_default
+  - _self_
+
+# Experiment 3: Constant Moment of Inertia — Out-of-Distribution (OOD)
+attitude:
+  quat_init: [0.5262, 0.3527, 0.6426, 0.4309]
+  quat_goal: [-0.6785, 0.6125, -0.2532, -0.3166]
+
+# Ixx=44, Iyy=48, Izz=43
+inertia: [40.0, 0.0, 0.0, 0.0, 44.0, 0.0, 0.0, 0.0, 43.0]
+post_inertia: [54.0, 0.0, 0.0, 0.0, 60.0, 0.0, 0.0, 0.0, 51.0]
+inertia_change:
+  enabled: true
+  time_sec: 0.0

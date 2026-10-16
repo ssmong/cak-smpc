@@ -1,0 +1,15 @@
+defaults:
+  - sc_default
+  - _self_
+
+# Experiment 2b: Abrupt Change of Moment of Inertia at t=10s (step)
+# Before: [31, 33, 28] (diagonal) -> After: non-diagonal
+inertia: [31.0, 0.0, 0.0, 0.0, 33.0, 0.0, 0.0, 0.0, 28.0]
+post_inertia: [42, 5.2, 3.8, 5.2, 38, 4.5, 3.8, 4.5, 43]
+inertia_change:
+  enabled: true
+  time_sec: 10.0
+
+attitude:
+  quat_init: [0.6184, -0.5071, -0.3805, -0.4645]
+  quat_goal: [-0.6059, -0.3878, 0.4342, -0.5422]

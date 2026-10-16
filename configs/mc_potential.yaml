@@ -1,0 +1,39 @@
+defaults:
+  - sc: sc_default
+  - controller: potential
+  - constraint: default
+  - _self_
+
+sim:
+  sim_time: 50.0
+  sim_dt: 0.01
+  ctrl_dt: 0.1
+  log_dt: 0.01
+
+env:
+  gravity_order: 4
+  enable_drag: true
+  enable_srp: true
+  enable_gg: true
+
+mc:
+  num_episodes: 500
+  num_workers: 20
+  omega_max: 0.0
+  perturb_q_init_deg: 10.0
+  viol_margin_deg: 1.0e-2
+
+experiments:
+  - sc: exp1a
+    constraint: exp1a
+    desc: "Constant MOI (In-Distribution)"
+
+alpha_list: [0.95]
+
+margin_files: []
+
+seed: 42
+
+hydra:
+  run:
+    dir: outputs/mc_potential/${now:%Y-%m-%d}/${now:%H-%M-%S}

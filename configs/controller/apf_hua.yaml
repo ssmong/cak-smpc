@@ -1,0 +1,12 @@
+_target_: sim.controller.apf_hua.APFHua
+
+ctrl_dt: ${sim.ctrl_dt}
+inertia: ${sc.inertia}
+
+# Hua et al. (AST 2024) PD-like APF gains
+k_q: 2.0               # APF gradient gain
+k_omega: 5.0           # Damping gain
+beta: 2.0              # Constant attractive weight
+eta: 0.1               # Weight base for alpha_i (Hua eq.21)
+impact_margin_deg: 10.0 # Impact area extends theta_F + this [deg]
+delta_gnron: 0.1        # GNRON detection threshold (Hua eq.25, 0=disable)

@@ -1,0 +1,45 @@
+defaults:
+  - sc: sc_default
+  - controller: party_smpc
+  - constraint: default
+  - _self_
+
+sim:
+  sim_time: 50.0
+  sim_dt: 0.01
+  ctrl_dt: 0.01
+  log_dt: 0.5
+
+controller:
+  qp_solver: "clarabel"        # interior-point; more robust than OSQP for randomised MC conditions
+
+env:
+  gravity_order: 4
+  enable_drag: true
+  enable_srp: true
+  enable_gg: true
+
+mc:
+  num_episodes: 200              # Number of MC rollouts per experiment for margin estimation
+  num_workers: 1                 # Parallel workers (>1 uses multiprocessing.Pool with fork)
+  omega_max: 0.0                 # [rad/s] per-axis uniform range for initial angular velocity
+  perturb_q_init_deg: 10.0        # [deg] max random rotation applied to base q_init per episode
+  skip_initial_solves: 3          # Skip first N MPC solves per episode (cold-start transient)
+  two_pass_scp: false            # Auto two-pass: pass1→threshold, pass2→SCP margin
+  scp_threshold_percentile: 90   # Percentile of latent deviation for auto threshold
+
+# Margin calibration experiments (nominal/in-distribution only).
+# OOD/abrupt validation is done separately via 3_run_mc.py.
+experiments:
+  - sc: exp1a
+    constraint: exp1a
+    desc: "Constant MOI (In-Distribution)"
+  - sc: exp1b
+    constraint: exp1b
+    desc: "Constant MOI (Non-Diagonal)"
+
+seed: 42
+
+hydra:
+  run:
+    dir: outputs/calibrate_party/${now:%Y-%m-%d}/${now:%H-%M-%S}

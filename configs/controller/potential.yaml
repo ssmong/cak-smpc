@@ -1,0 +1,9 @@
+_target_: sim.controller.potential.ConvexPotential
+
+ctrl_dt: ${sim.ctrl_dt}
+inertia: ${sc.inertia}
+
+# Lee & Mesbahi (2014) model-dependent (modified backstepping) gains
+alpha_bs: 2.0         # Backstepping saturation amplitude
+beta_bs: 0.5          # Backstepping saturation slope
+k1: 0.01              # Log-barrier repulsive gain for KOZ

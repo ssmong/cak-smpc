@@ -1,0 +1,31 @@
+defaults:
+  - sc_default
+  - _self_
+
+# Experiment 2a: Continuous Inertia Drift via 2-Link Robot Arm
+# Before: [31, 33, 28] (diagonal) -> After: non-diagonal (smooth, 20s transition)
+# Off-diagonal ~7-8% of diagonal, hump shape (overshoot then settle)
+inertia: [31.0, 0.0, 0.0, 0.0, 33.0, 0.0, 0.0, 0.0, 28.0]
+post_inertia: [31.0, 0.0, 0.0, 0.0, 33.0, 0.0, 0.0, 0.0, 28.0]  # ignored for robot_arm
+inertia_change:
+  enabled: true
+  time_sec: 10.0
+  transition:
+    type: "robot_arm"
+    duration_sec: 20.0
+    params:
+      mass_1: 1.5
+      arm_length_1: 0.9
+      theta_1_0_deg: 0
+      theta_1_f_deg: 160
+      mass_2: 3.0
+      arm_length_2: 0.6
+      theta_2_0_deg: 0
+      theta_2_f_deg: -110
+      delay_sec: 4.0
+      pivot: [0.6, 0.5, 0.5]
+      rotation_axis: [2, 1, 1]
+
+attitude:
+  quat_init: [0.6184, -0.5071, -0.3805, -0.4645]
+  quat_goal: [-0.6059, -0.3878, 0.4342, -0.5422]

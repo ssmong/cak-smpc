@@ -1,0 +1,40 @@
+_target_: sim.controller.ukf_smpc.UKFSMPC
+
+mpc_dt: 0.5           # NLP prediction horizon step [s]
+est_dt: ${sim.ctrl_dt} # Estimator update rate = BSK task rate
+horizon: 20
+inertia: ${sc.inertia}
+
+# Cost matrices: error vector = [quat_err(3), omega_err(3)]
+Q_diag: [10.0, 10.0, 10.0, 10.0, 10.0, 10.0]
+R_diag: [1.0, 1.0, 1.0]
+F_diag: [100.0, 100.0, 100.0, 100.0, 100.0, 100.0]
+du_weight: 1.0
+
+rho: 1e6            # KOZ slack penalty
+max_iter: 100
+integrator_steps: 5  # RK4 sub-steps (must match calibration)
+
+# Chance constraint & covariance propagation
+cc:
+  alpha: 0.95        # P(safe) >= alpha
+  Sigma_w_diag: ${noise.Sigma_w_diag}
+  N_robust: 20       # Robust horizon (covariance frozen after N_robust steps)
+  # UT parameters for prediction covariance propagation
+  ut_alpha: 0.1
+  ut_beta: 2.0       # Gaussian prior (optimal for Gaussian)
+  ut_kappa: 0.0      # secondary scaling
+  # SCP coupling: re-propagate tightening with optimised u, then re-solve
+  scp_max_iter: 3    # outer SCP iterations (1 = original one-shot)
+  scp_tol: 1e-3      # relative u convergence tolerance
+
+# Augmented-state estimator (13-state UKF: q4 + omega3 + j6)
+estimator:
+  # P_J_0_diag: ${noise.P_J_0_diag}                           # Initial inertia covariance — j_vec order: [J11, J12, J13, J22, J23, J33]
+  P_J_0_diag: [3, 3, 3, 3, 3, 3]
+  Q_J_diag: [1e-1, 2e-2, 2e-2, 1e-1, 2e-2, 1e-1]            # Inertia random-walk process noise (off-diag ~10% of diag)
+  R_meas_diag: [7e-7, 7e-7, 7e-7, 7e-7, 3e-8, 3e-8, 3e-8]
+  Q_state_diag: ${noise.Sigma_w_diag}                       # State process noise for estimator
+  ut_alpha: 1e-3                                            # UT parameters (n=13, different from prediction UKF n=7)
+  ut_beta: 2.0
+  ut_kappa: 0.0

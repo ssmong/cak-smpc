@@ -1,0 +1,24 @@
+defaults:
+  - _self_
+  - sc: sc_default
+  - controller: ramp_net
+  - constraint: default
+
+sim:
+  sim_time: 50.0
+  sim_dt: 0.01
+  ctrl_dt: 0.5
+  log_dt: 0.01
+
+env:
+  gravity_order: 4
+  include_sun: true
+  enable_drag: true
+  enable_srp: true
+  enable_gg: true
+
+seed: 42
+
+hydra:
+  run:
+    dir: outputs/${hydra:runtime.choices.controller}/${now:%Y-%m-%d}/${now:%H-%M-%S}

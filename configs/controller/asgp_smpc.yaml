@@ -1,0 +1,34 @@
+_target_: sim.controller.asgp_smpc.ASGPSMPC
+
+model_root: "outputs/learning_asgp/sparse_gp"
+exp_name: ${exp_name}
+
+ctrl_dt: ${sim.ctrl_dt}
+mpc_dt: ${sim.ctrl_dt}
+horizon: 20
+inertia: ${sc.inertia}
+
+Q_diag: [10.0, 10.0, 10.0, 10.0, 10.0, 10.0]
+R_diag: [1.0, 1.0, 1.0]
+F_diag: [100.0, 100.0, 100.0, 100.0, 100.0, 100.0]
+du_weight: 1.0
+rho: 1e6
+max_iter: 100
+integrator_steps: 5
+
+cc:
+  alpha: 0.95
+  max_tighten: 0.5
+  var_floor: 1e-8            # Numerical safety floor for process noise variance (rad²/s²)
+  var_scale: 0.16             # Scale factor for GP variance in tightening (< 1 to reduce)
+
+gp:
+  mode: "fast"                # "fast" = fixed kernel hyperparams; "full" = online ELBO optimization
+  window_size: 200
+  num_inducing: 50
+  perc_th: 0.0001
+  lambda_forget: 0.99
+  refresh_period: 1
+  hp_update_period: 1          # Full-AGP: optimize hyperparams every step (paper Alg. 2)
+  hp_num_steps: 1              # Full-AGP: single inference iteration (paper Sec. III-B2)
+  hp_lr: 0.05                 # Full-AGP: learning rate (paper Sec. IV-A)

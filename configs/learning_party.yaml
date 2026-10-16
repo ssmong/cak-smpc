@@ -1,0 +1,89 @@
+wandb:
+  project: "2026-AST-PARTY"
+  entity: null
+  group: "party"
+  mode: "online"
+
+hydra:
+  run:
+    dir: "outputs/learning_party/${now:%Y-%m-%d}/${now:%H-%M-%S}"
+
+data:
+  _target_: src.dataset.PartyDataset
+  name: "clean"
+  data_root: "data/raw"
+  state_dim: 7
+  control_dim: 3
+  state_key: "state"
+  control_key: "control"
+  quat_indices: [0, 1, 2, 3]
+  
+  num_seqs: 100000
+  sim_time: 46
+  log_dt: 0.1
+  
+  hist_dt: 0.1
+  pred_dt: 0.5
+  hist_len: 50
+  sample_stride: 10
+  storage_device: "cuda"
+  
+  seed: 42
+
+model:
+  _target_: src.model.Party
+  state_dim: 7
+  control_dim: 3
+  hv_dim: 64          # VAE hidden dim
+  hk_dim: 64         # Koopman hidden dim
+  latent_dim: 32
+  vae_depth: 3        # VAE Encoder/Decoder residual block 개수
+  rho_max_A: 1.1
+  use_custom_mamba: false   # true: pure PyTorch Mamba (Jetson aarch64 compatible, no mamba-ssm needed)
+
+train:
+  pretrained_model_dir: null    # e.g. "2026-02-25/16-34-14" → loads outputs/learning_party/{dir}/best_model.pt
+  reset_logvar_head: true       # Reset logvar_head when loading pretrained model (small init for stable reparameterization)
+  batch_size: 128
+  epochs: 100
+  lr: 5e-4
+  weight_decay: 1e-4
+  # Per-component LR scales for finetuning (multiplied by base lr).
+  # Only used when pretrained_model_dir is set.
+  finetune_lr_scale:
+    logvar_head: 10.0
+    encoder: 0.1
+    decoder: 0.0        # frozen
+    context_encoder: 0.1
+    koopman: 0.01
+  scheduler_patience: 5
+  early_stopping_patience: 11
+  run_sim: true
+  grad_clip: 1.0
+
+  train_min_steps: 20
+  train_max_steps: 20
+  valid_steps: 20
+  test_steps: 20
+  long_term_steps: 50
+
+  weights:
+    quat: 1.0
+    omega: 0.1
+    pred_x: 1.0
+    pred_z: 0.1
+    nll: 1e-4
+    recon_z: 0.05
+    svd_rho: 1.0
+    P0: 1e-3                  # P_0 variance penalty: push encoder toward confident (low-variance) encoding
+    qnorm: 0.0001             # Decoder raw quaternion norm loss: (||q_raw|| - 1)^2
+    metric: 0.001             # Metric-preserving loss: latent dist ≈ physical geodesic
+    metric_scale: 0.1         # Target scale: dist_z ≈ scale * dist_x (smaller → more compact z)
+    metric_samples: 512       # Random subsample size for pairwise distance computation
+    geodesic: 0.0001           # Path linearity: chordal interp on S³ ≈ straight line in z-space
+    geodesic_samples: 128     # Number of random quaternion pairs per batch
+    geodesic_omega_max: 0.1   # Angular velocity sampling range [rad/s]
+    ctx_smooth: 0.0            # Context smoothness: ||A(ctx_t) - A(ctx_{t+shift})||^2 (0 = disabled)
+    ctx_smooth_shift: 5        # History shift in steps (= pred_dt / hist_dt)
+
+device: "cuda"

@@ -1,0 +1,62 @@
+tag: "SpookySat"
+mass: 191.2
+# Inertia [Ixx, 0, 0, 0, Iyy, 0, 0, 0, Izz]
+inertia: [34.168, 0.0, 0.0, 0.0, 43.068, 0.0, 0.0, 0.0, 34.908]
+post_inertia: [34.168, 0.0, 0.0, 0.0, 43.068, 0.0, 0.0, 0.0, 34.908]
+inertia_change:
+  enabled: false
+  time_sec: 50.0
+  transition:
+    type: "step"
+    duration_sec: 0.0
+    params:
+      mass_1: 1.0
+      arm_length_1: 1.0
+      theta_1_0_deg: 0.0
+      theta_1_f_deg: 0.0
+      mass_2: 1.0
+      arm_length_2: 1.0
+      theta_2_0_deg: 0.0
+      theta_2_f_deg: 0.0
+      delay_sec: 0.0
+      pivot: [0.0, 0.0, 0.0]
+      rotation_axis: [0, 0, 1]
+
+orbit:
+  R_E: 6378.1366  # [km]
+  a: 402.72       # [km]
+  e: 0.00130547
+  i: 51.6         # [deg]
+  Omega: 198.39   # [deg]
+  omega: 39.26    # [deg]
+  f: 117.71       # [deg]
+
+attitude:
+  quat_init: [0.1785, -0.7042, 0.0559, -0.6849]
+  quat_goal: [0.7512, 0.3165, 0.5364, -0.2186]
+  omega_init: [0.0, 0.0, 0.0]
+
+geometry:
+  hub:
+    length: 0.78
+    width: 0.74
+    height: 0.56
+    coeff: 2.2
+    diff: 0.1
+    spec: 0.9
+  panel:
+    use_panel: false
+    width: 1.0
+    length: 2.0
+    coeff: 2.2
+    diff: 0.16
+    spec: 0.16
+    offset: 1.5 # distance from center along Y axis
+
+sensors:
+  use_nav_noise: true
+  nav_noise:
+    pos: 0.0      # [m]
+    vel: 0.0      # [m/s]
+    att: 0.02     # [deg] 1-sigma
+    omega: 0.002  # [deg/s] 1-sigma

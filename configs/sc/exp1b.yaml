@@ -1,0 +1,14 @@
+defaults:
+  - sc_default
+  - _self_
+
+# Experiment 1b: Non-Diagonal Inertia
+attitude:
+  quat_init: [0.5262, 0.3527, 0.6426, 0.4309]
+  quat_goal: [-0.6785, 0.6125, -0.2532, -0.3166]
+
+inertia: [33.0, 0.0, 0.0, 0.0, 35.0, 0.0, 0.0, 0.0, 34.0]  # Nominal
+post_inertia: [33.0, 4.3, 5.6, 4.3, 35.0, 4.7, 5.6, 4.7, 34.0]  # Actual
+inertia_change: 
+  enabled: true
+  time_sec: 0.0  # 0.0 so that inertia change is instant

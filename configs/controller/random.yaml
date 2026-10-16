@@ -1,0 +1,5 @@
+_target_: sim.controllers.random.Random
+  ModelTag: "Random"
+  u_min: -2.0
+  u_max: 2.0
+  seed: null  # Will be set per run

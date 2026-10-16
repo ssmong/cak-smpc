@@ -1,0 +1,42 @@
+_target_: sim.controller.party_smpc.PartySMPC
+
+model_dir: "2026-03-07/12-34-06"   # "outputs/learning_party/" will be added automatically
+mpc_dt: 0.5               # MPC prediction step [s] — must match model's pred_dt
+ctrl_dt: ${sim.ctrl_dt}    # BSK task rate — must evenly divide hist_dt
+horizon: 20               # MPC prediction horizon steps
+
+Q_diag: [10, 10, 10, 10, 10, 10, 10]
+R_diag: [1, 1, 1]
+F_diag: [100, 100, 100, 100, 100, 100, 100]
+du_weight: 1.0
+du_max: 0.1                # Hard trust region on first control step: |u_0 - u_prev| ≤ du_max (null = disabled)
+rho: 1e6
+max_iter: 100
+qp_solver: "clarabel"       # "osqp" (ADMM, fast w/ warm-start) or "clarabel" (interior-point, robust)
+eig_floor_ratio: 1e-4       # Eigenvalue floor for Q/F_latent PSD projection (OSQP: ~1e-2, Clarabel: ~1e-4..1e-6)
+
+cc:
+  alpha: 0.95             # Chance constraint confidence level
+  mode: "boole"           # Joint constraint -> Individual constraint (boole/sqrt)
+  cc_buffer_deg: 20.0     # If outside the buffer, use nominal constraint instead of chance constrained one
+  koz_buffer_deg: 30.0    # If outside the buffer, ignore the koz constraint for the computation efficiency
+  max_tighten_deg: 20.0   # Maximum tightening angle (to avoid jacobian explosion)
+  w_beta: 0.25            # CC tightening calibration factor: δ_c = k_α × β × σ (1.0 = no correction)
+
+w_adaptive:
+  enable_w_update: true    # Enable online W adaptation (false = always use W_offline)
+  gamma: 0.85             # Geometric decay rate toward s=1 (half-life ~4.3 MPC steps)
+  warmup_steps: 10        # Warmup ramp before full online influence
+  s_max: 5.0              # Ceiling on scalar multiplier (infeasibility protection)
+  inflate_alpha: 0.8      # χ²(nz) quantile for inflation trigger
+
+record_linearization_error: false  # Set true for MC margin computation
+lin_margin_file: null              # Path to empirical linearization margin YAML (null = no margin)
+lin_margin_key: "margin_p99"       # Key within margin YAML: "margin_max", "margin_p95", "margin_p90", etc.
+
+use_incremental_ctx: false   # true: RNN-like single-step Mamba update instead of full re-encoding
+use_custom_mamba: false      # true: pure PyTorch MambaPure (no mamba-ssm needed, Jetson aarch64 compatible)
+
+scp_relinearize:
+  enabled: true             # true: re-linearize KOZ constraints if QP solution deviates from nominal
+  threshold: 0.99           # L-inf deviation in latent space triggering re-linearization

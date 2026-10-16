@@ -1,0 +1,20 @@
+# NOTE: mamba-ssm should be installed manually using --no-build-isolation flag
+#       Also, it does not work with CUDA 13.0
+
+numpy
+matplotlib
+plotly
+scipy
+casadi
+hydra-core
+omegaconf
+torch
+tqdm
+h5py
+bsk
+pytest
+wandb
+choldate @ git+https://github.com/jcrudy/choldate.git
+pyro-ppl
+osqp
+clarabel

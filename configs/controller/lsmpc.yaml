@@ -1,0 +1,20 @@
+_target_: sim.controller.lsmpc.LSMPC
+
+mpc_dt: 0.5           # QCQP prediction horizon step [s]
+horizon: 20
+inertia: ${sc.inertia}
+
+# Cost matrices: error vector = [quat_err(3), omega_err(3)]
+Q_diag: [10.0, 10.0, 10.0, 10.0, 10.0, 10.0]
+R_diag: [1.0, 1.0, 1.0]
+F_diag: [100.0, 100.0, 100.0, 100.0, 100.0, 100.0]
+du_weight: 1.0
+
+rho: 1e6            # KOZ slack penalty
+max_iter: 100
+
+# Chance constraint & covariance propagation
+cc:
+  alpha: 0.95        # P(safe) >= alpha
+  Sigma_w_diag: ${noise.Sigma_w_diag}
+  N_robust: 20       # Robust horizon (covariance frozen after N_robust steps)

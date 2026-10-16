@@ -1,0 +1,50 @@
+defaults:
+  - sc: sc_default
+  - constraint: default
+  - controller: asgp_smpc
+  - _self_
+
+sim:
+  sim_time: 50.0
+  sim_dt: 0.01
+  ctrl_dt: 0.5
+  log_dt: 0.01
+
+env:
+  gravity_order: 4
+  enable_drag: true
+  enable_srp: true
+  enable_gg: true
+
+mc:
+  num_episodes: 500
+  num_workers: 20
+  omega_max: 0.0
+  perturb_q_init_deg: 10.0
+  viol_margin_deg: 1.0e-2         # [deg] margin subtracted from KOZ half-angle for violation check (filters numerical noise)
+
+experiments:
+  # - sc: exp1a
+  #   constraint: exp1a
+  #   desc: "Constant MOI (In-Distribution)"
+  # - sc: exp1b
+  #   constraint: exp1b
+  #   desc: "Constant MOI (Non-Diagonal)"
+  - sc: exp2a
+    constraint: exp2a
+    desc: "Continuous MOI Drift"
+  # - sc: exp2b
+  #   constraint: exp2b
+  #   desc: "Abrupt MOI Change"
+
+alpha_list: [0.95]
+
+seed: 42
+
+# Default ASGP checkpoint from the latest successful training run.
+controller:
+  model_dir: "2026-03-05/15-23-58"
+
+hydra:
+  run:
+    dir: outputs/mc_asgp/${now:%Y-%m-%d}/${now:%H-%M-%S}
